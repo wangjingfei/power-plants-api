@@ -15,4 +15,4 @@ class Base:
         """
         将类名转换为小写作为表名
         """
-        return cls.__name__.lower() 
+        return cls.__name__.lower()

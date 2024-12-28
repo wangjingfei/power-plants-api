@@ -21,4 +21,4 @@ class MonthlyReport(Base):
     lastUpdate = Column(TIMESTAMP, nullable=True, default=datetime.utcnow)
 
     # 关联关系
-    user = relationship("User", back_populates="monthly_reports") 
+    user = relationship("User", back_populates="monthly_reports")

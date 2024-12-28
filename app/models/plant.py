@@ -11,4 +11,4 @@ class Plant(Base):
     owner_id = Column(BigInteger, nullable=True)
 
     # 关联关系
-    daily_reports = relationship("DailyReport", back_populates="plant") 
+    daily_reports = relationship("DailyReport", back_populates="plant")

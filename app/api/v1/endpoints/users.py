@@ -86,4 +86,4 @@ def delete_user(
     db_user = user.get(db, id=user_id)
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")
-    return user.remove(db, id=user_id) 
+    return user.remove(db, id=user_id)

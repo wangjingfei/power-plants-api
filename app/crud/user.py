@@ -15,4 +15,4 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
             .limit(limit)\
             .all()
 
-user = CRUDUser(User) 
+user = CRUDUser(User)

@@ -102,4 +102,4 @@ def read_owner_daily_reports(
     """
     获取特定用户的所有日报数据
     """
-    return daily_report.get_by_owner_id(db, owner_id=owner_id, skip=skip, limit=limit) 
+    return daily_report.get_by_owner_id(db, owner_id=owner_id, skip=skip, limit=limit)

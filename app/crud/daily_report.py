@@ -22,4 +22,4 @@ class CRUDDailyReport(CRUDBase[DailyReport, DailyReportCreate, DailyReportUpdate
             .order_by(DailyReport.date.desc())\
             .offset(skip).limit(limit).all()
 
-daily_report = CRUDDailyReport(DailyReport) 
+daily_report = CRUDDailyReport(DailyReport)

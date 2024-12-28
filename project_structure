@@ -22,4 +22,4 @@ my_api_project/
 │   │   │   └── endpoints/    # API路由处理器
 │   │   └── deps.py          # 依赖注入
 │   └── tests/               # 单元测试
-└── requirements.txt         # 项目依赖 
+└── requirements.txt         # 项目依赖

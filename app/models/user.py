@@ -12,4 +12,4 @@ class User(Base):
 
     # 关联关系
     daily_reports = relationship("DailyReport", back_populates="owner")
-    monthly_reports = relationship("MonthlyReport", back_populates="user") 
+    monthly_reports = relationship("MonthlyReport", back_populates="user")

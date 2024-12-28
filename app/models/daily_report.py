@@ -23,4 +23,4 @@ class DailyReport(Base):
 
     # 关联关系
     plant = relationship("Plant", back_populates="daily_reports")
-    owner = relationship("User", back_populates="daily_reports") 
+    owner = relationship("User", back_populates="daily_reports")

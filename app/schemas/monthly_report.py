@@ -30,4 +30,4 @@ class MonthlyReportInDBBase(MonthlyReportBase):
         from_attributes = True
 
 class MonthlyReport(MonthlyReportInDBBase):
-    pass 
+    pass
