@@ -1,7 +1,8 @@
 import uvicorn
 from app.core.config import settings
 from app.main import app
-from app.core.database import engine, Base
+from app.core.database import engine
+from app.models import Base
 
 def init_db():
     """初始化数据库表"""
@@ -17,8 +18,8 @@ def main():
         "app.main:app",
         host="0.0.0.0",
         port=8000,
-        reload=True,  # 开发环境下启用热重载
-        workers=1     # 生产环境可以增加worker数量
+        reload=True,
+        workers=1
     )
 
 if __name__ == "__main__":

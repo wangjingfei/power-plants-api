@@ -15,64 +15,99 @@ error() {
     exit 1
 }
 
-# 检查是否安装了Homebrew
-check_homebrew() {
-    info "Checking Homebrew installation..."
-    if ! command -v brew &> /dev/null; then
-        error "Homebrew is not installed. Please install Homebrew first:
-        /bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""
-    fi
-}
-
 # 检查Python是否安装
 check_python() {
     info "Checking Python installation..."
     if ! command -v python3 &> /dev/null; then
         error "Python3 is not installed. Please install Python3 first:
-        brew install python3"
+        sudo apt update
+        sudo apt install -y python3 python3-pip python3-venv"
+    fi
+}
+
+# 检查是否安装了python3-venv
+check_python_venv() {
+    info "Checking python3-venv installation..."
+    if ! dpkg -l | grep -q python3-venv; then
+        info "Installing python3-venv..."
+        sudo apt update
+        sudo apt install -y python3-venv
+    fi
+}
+
+# 清理旧的虚拟环境
+cleanup_venv() {
+    info "Cleaning up old virtual environment..."
+    if [ -d "venv" ]; then
+        rm -rf venv
     fi
 }
 
 # 检查虚拟环境
 check_venv() {
-    info "Checking virtual environment..."
-    if [ ! -d "venv" ]; then
-        info "Creating virtual environment..."
-        # 使用完整路径的python3来创建虚拟环境
-        /usr/local/bin/python3 -m venv venv || /opt/homebrew/bin/python3 -m venv venv
-        if [ $? -ne 0 ]; then
-            error "Failed to create virtual environment. Try installing python3-venv:
-            brew install python3"
-        fi
+    info "Creating virtual environment..."
+    cleanup_venv
+    python3 -m venv venv
+    if [ $? -ne 0 ]; then
+        error "Failed to create virtual environment. Please check your Python installation."
+    fi
+    
+    # 验证虚拟环境是否创建成功
+    if [ ! -f "venv/bin/activate" ]; then
+        error "Virtual environment creation failed. Missing activation script."
     fi
 }
 
 # 激活虚拟环境
 activate_venv() {
     info "Activating virtual environment..."
+    if [ ! -f "venv/bin/activate" ]; then
+        error "Virtual environment activation script not found"
+    fi
     source venv/bin/activate
     if [ $? -ne 0 ]; then
         error "Failed to activate virtual environment"
+    fi
+    
+    # 验证虚拟环境是否正确激活
+    if [ -z "$VIRTUAL_ENV" ]; then
+        error "Virtual environment not properly activated"
     fi
 }
 
 # 安装依赖
 install_dependencies() {
     info "Installing dependencies..."
+    if [ ! -f "venv/bin/pip" ]; then
+        error "pip not found in virtual environment"
+    fi
+    
+    # 升级pip
     venv/bin/pip install --upgrade pip
+    if [ $? -ne 0 ]; then
+        error "Failed to upgrade pip"
+    fi
+    
+    # 安装依赖
     venv/bin/pip install -r requirements.txt
+    if [ $? -ne 0 ]; then
+        error "Failed to install dependencies"
+    fi
 }
 
 # 启动应用
 start_app() {
     info "Starting application..."
+    if [ ! -f "venv/bin/python" ]; then
+        error "Python not found in virtual environment"
+    fi
     venv/bin/python run.py
 }
 
 # 主函数
 main() {
-    check_homebrew
     check_python
+    check_python_venv
     check_venv
     activate_venv
     install_dependencies
