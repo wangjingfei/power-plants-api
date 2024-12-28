@@ -1,0 +1,25 @@
+my_api_project/
+├── alembic/                    # 数据库迁移相关文件
+├── app/
+│   ├── __init__.py
+│   ├── main.py                 # FastAPI应用主入口
+│   ├── core/
+│   │   ├── __init__.py
+│   │   ├── config.py          # 配置文件
+│   │   └── database.py        # 数据库连接配置
+│   ├── models/
+│   │   ├── __init__.py
+│   │   └── base.py           # SQLAlchemy模型基类
+│   ├── schemas/
+│   │   ├── __init__.py       # Pydantic模型（请求/响应模式）
+│   ├── crud/
+│   │   ├── __init__.py
+│   │   └── base.py           # 基础CRUD操作
+│   ├── api/
+│   │   ├── __init__.py
+│   │   ├── v1/
+│   │   │   ├── __init__.py
+│   │   │   └── endpoints/    # API路由处理器
+│   │   └── deps.py          # 依赖注入
+│   └── tests/               # 单元测试
+└── requirements.txt         # 项目依赖 
