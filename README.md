@@ -24,7 +24,7 @@
 - Nginx (生产环境)
 
 ## 项目结构
-plaintext
+```plaintext
 my_api_project/
 ├── alembic/ # 数据库迁移相关文件
 ├── app/
@@ -65,7 +65,7 @@ my_api_project/
 ├── start.sh # 本地启动脚本
 ├── deploy.sh # 远程部署脚本
 └── local_deploy.sh # 本地部署脚本
-
+```
 ## 快速开始
 
 ### 开发环境设置
