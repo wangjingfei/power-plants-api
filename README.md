@@ -81,17 +81,30 @@ cd power-plants-api
 
 1. 创建数据库配置文件：
 
-```bash:README.md
-mkdir -p /opt/power-plants/config/
-cp config/production.conf /opt/power-plants/config/database.conf
+```bash
+sudo mkdir -p /etc/power-plant/
+sudo cp config/production.conf /etc/power-plant/config.ini
 ```
+
 2. 修改数据库配置：
 
 ```ini
+# /etc/power-plant/config.ini
+[database]
 database.host=localhost
 database.name=power_plants_db
 database.user=power_plants_user
 database.password=your_secure_password
+
+[app]
+DEBUG=false
+WORKERS=4
+HOST=0.0.0.0
+PORT=8000
+
+[logging]
+LEVEL=INFO
+FILE=/var/log/power-plant/app.log
 ```
 
 ## API 文档
@@ -151,9 +164,9 @@ chmod +x local_deploy.sh
 ## 日志
 
 日志文件位置：
-- 应用日志: `/opt/power-plants/logs/app.log`
-- 错误日志: `/opt/power-plants/logs/fastapi.error.log`
-- Nginx访问日志: `/opt/power-plants/logs/nginx.access.log`
+- 应用日志: `/var/log/power-plant/app.log`
+- 错误日志: `/var/log/power-plant/error.log`
+- Nginx访问日志: `/var/log/power-plant/nginx/access.log`
 
 ## 开发指南
 
