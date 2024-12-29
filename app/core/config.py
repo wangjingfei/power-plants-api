@@ -26,9 +26,11 @@ class Settings(BaseSettings):
         # 数据库配置
         db_config = config['database']
         self.DATABASE_URL = (
-            f"mysql+pymysql://{db_config['database.user']}:{db_config['database.password']}"
-            f"@{db_config['database.host']}/{db_config['database.name']}"
+            f"mysql+pymysql://{db_config['username']}:{db_config['password']}"
+            f"@{db_config['host']}:{db_config.get('port', '3306')}/{db_config['database']}"
+            f"?charset=utf8mb4"
         )
+        self.DB_DEBUG = db_config.getboolean('debug', fallback=False)
         
         # 应用配置
         if 'app' in config:
