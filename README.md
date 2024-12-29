@@ -152,7 +152,7 @@ FILE=/var/log/power-plant/app.log
 1. 修改 `local_deploy.sh` 中的配置：
 ```bash
 REMOTE_HOST="us.wangjingfei.com"
-REMOTE_USER="your_ssh_user"
+REMOTE_USER="root"
 ```
 
 2. 执行部署：

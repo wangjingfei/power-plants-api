@@ -6,7 +6,7 @@ RED='\033[0;31m'
 NC='\033[0m' # No Color
 
 # 定义变量
-APP_NAME="fastapi-crud"
+APP_NAME="power-plants-api"
 APP_PATH="/opt/power-plants"
 VENV_PATH="$APP_PATH/venv"
 USER="power-plants"
@@ -81,7 +81,7 @@ create_systemd_service() {
     info "Creating systemd service..."
     cat > /etc/systemd/system/$APP_NAME.service << EOF
 [Unit]
-Description=FastAPI CRUD API Service
+Description=Power Plants API Service
 After=network.target
 
 [Service]

@@ -7,8 +7,8 @@ NC='\033[0m' # No Color
 
 # 定义变量
 REMOTE_HOST="us.wangjingfei.com"
-REMOTE_USER="your_ssh_user"  # 替换为你的SSH用户名
-APP_NAME="fastapi-crud"
+REMOTE_USER="root"
+APP_NAME="power-plants-api"
 REMOTE_APP_PATH="/opt/power-plants"
 LOCAL_TEMP_DIR="/tmp/$APP_NAME"
 
