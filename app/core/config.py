@@ -11,6 +11,16 @@ class Settings(BaseSettings):
     # 配置文件路径
     CONFIG_FILE: str = "/etc/power-plant/config.ini"
     
+    # 添加这些字段的声明
+    DATABASE_URL: str = ""
+    DB_DEBUG: bool = False
+    DEBUG: bool = False
+    WORKERS: int = 1
+    HOST: str = "0.0.0.0"
+    PORT: int = 8000
+    LOG_LEVEL: str = "INFO"
+    LOG_FILE: str = "/var/log/power-plant/app.log"
+    
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.load_config()

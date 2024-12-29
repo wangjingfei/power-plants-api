@@ -58,12 +58,20 @@ create_directories() {
 # 部署应用
 deploy_application() {
     info "Deploying application..."
+    # 创建临时解压目录
+    mkdir -p /tmp/app_temp
+    
     # 解压应用文件
-    tar xzf $DEPLOY_TEMP -C /tmp
+    tar xzf $DEPLOY_TEMP -C /tmp/app_temp
+    
     # 复制文件到目标目录
-    cp -r /tmp/$APP_NAME/* $APP_PATH/
+    cp -r /tmp/app_temp/* $APP_PATH/
+    
     # 设置权限
     chown -R $USER:$GROUP $APP_PATH
+    
+    # 清理临时目录
+    rm -rf /tmp/app_temp
 }
 
 # 设置Python虚拟环境
@@ -107,12 +115,13 @@ configure_nginx() {
     cat > /etc/nginx/sites-available/$APP_NAME << EOF
 server {
     listen 80;
-    server_name us.wangjingfei.com;  # 使用实际域名
+    server_name us.wangjingfei.com;
 
-    access_log $APP_PATH/logs/nginx.access.log;
-    error_log $APP_PATH/logs/nginx.error.log;
+    access_log /var/log/power-plant/nginx/access.log;
+    error_log /var/log/power-plant/nginx/error.log;
 
-    location / {
+    location /api {
+        rewrite ^/api/(.*) /\$1 break;
         proxy_pass http://localhost:8000;
         proxy_http_version 1.1;
         proxy_set_header Upgrade \$http_upgrade;
@@ -121,13 +130,59 @@ server {
         proxy_cache_bypass \$http_upgrade;
         proxy_set_header X-Real-IP \$remote_addr;
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_set_header X-Forwarded-Prefix /api;
     }
 }
 EOF
 
-    ln -sf /etc/nginx/sites-available/$APP_NAME /etc/nginx/sites-enabled/
-    rm -f /etc/nginx/sites-enabled/default
+    #ln -sf /etc/nginx/sites-available/$APP_NAME /etc/nginx/sites-enabled/
+    #rm -f /etc/nginx/sites-enabled/default
     nginx -t || error "Nginx configuration test failed"
+}
+
+# 配置应用
+configure_application() {
+    info "Configuring application..."
+    CONFIG_FILE="/etc/power-plant/config.ini"
+    
+    # 创建配置目录
+    mkdir -p /etc/power-plant
+    
+    # 检查配置文件是否存在
+    if [ -f "$CONFIG_FILE" ]; then
+        info "Configuration file already exists, skipping creation..."
+    else
+        info "Creating default configuration file..."
+        # 创建配置文件
+        cat > $CONFIG_FILE << EOF
+[database]
+host = 127.0.0.1
+port = 3306
+username = plant
+password = xxxxx
+database = plants
+debug = false
+
+[app]
+DEBUG=false
+WORKERS=4
+HOST=0.0.0.0
+PORT=8000
+
+[logging]
+LEVEL=INFO
+FILE=/var/log/power-plant/app.log
+EOF
+        
+        # 设置配置文件权限
+        chown $USER:$GROUP $CONFIG_FILE
+        chmod 640 $CONFIG_FILE
+    fi
+
+    # 创建日志目录
+    mkdir -p /var/log/power-plant
+    chown -R $USER:$GROUP /var/log/power-plant
 }
 
 # 启动服务
@@ -153,6 +208,7 @@ main() {
     install_dependencies
     create_directories
     deploy_application
+    configure_application
     setup_virtualenv
     create_systemd_service
     configure_nginx

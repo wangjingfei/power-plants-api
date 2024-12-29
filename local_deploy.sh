@@ -8,6 +8,7 @@ NC='\033[0m' # No Color
 # 定义变量
 REMOTE_HOST="us.wangjingfei.com"
 REMOTE_USER="root"
+SSH_KEY_PATH="$HOME/.ssh/id_rsa"  # SSH私钥路径
 APP_NAME="power-plants-api"
 REMOTE_APP_PATH="/opt/power-plants"
 LOCAL_TEMP_DIR="/tmp/$APP_NAME"
@@ -22,10 +23,18 @@ error() {
     exit 1
 }
 
+# 检查SSH密钥
+check_ssh_key() {
+    info "Checking SSH key..."
+    if [ ! -f "$SSH_KEY_PATH" ]; then
+        error "SSH key not found at $SSH_KEY_PATH"
+    fi
+}
+
 # 检查SSH连接
 check_ssh() {
     info "Checking SSH connection..."
-    if ! ssh -q $REMOTE_USER@$REMOTE_HOST exit; then
+    if ! ssh -i "$SSH_KEY_PATH" -o StrictHostKeyChecking=no -q $REMOTE_USER@$REMOTE_HOST exit; then
         error "SSH connection failed. Please check your SSH configuration."
     fi
 }
@@ -39,24 +48,30 @@ prepare_files() {
 
     # 复制项目文件
     cp -r app requirements.txt run.py start.sh deploy.sh config $LOCAL_TEMP_DIR/
-    cp -r .env $LOCAL_TEMP_DIR/
+    cp -r .env $LOCAL_TEMP_DIR/ 2>/dev/null || true  # 如果.env不存在也不报错
 
     # 创建部署包
     cd /tmp
-    tar czf ${APP_NAME}.tar.gz $APP_NAME
+    tar czf ${APP_NAME}.tar.gz -C $LOCAL_TEMP_DIR .
+
+    # 回到原目录
+    cd - > /dev/null
+
+    # 复制deploy.sh到当前目录，方便后续上传
+    cp $LOCAL_TEMP_DIR/deploy.sh ./
 }
 
 # 上传文件到远程服务器
 upload_files() {
     info "Uploading files to remote server..."
-    scp /tmp/${APP_NAME}.tar.gz $REMOTE_USER@$REMOTE_HOST:/tmp/
-    scp deploy.sh $REMOTE_USER@$REMOTE_HOST:/tmp/
+    scp -i "$SSH_KEY_PATH" /tmp/${APP_NAME}.tar.gz $REMOTE_USER@$REMOTE_HOST:/tmp/
+    scp -i "$SSH_KEY_PATH" deploy.sh $REMOTE_USER@$REMOTE_HOST:/tmp/
 }
 
 # 执行远程部署
 execute_remote_deploy() {
     info "Executing remote deployment..."
-    ssh $REMOTE_USER@$REMOTE_HOST "bash -s" << 'EOF'
+    ssh -i "$SSH_KEY_PATH" $REMOTE_USER@$REMOTE_HOST "bash -s" << 'EOF'
         cd /tmp
         sudo bash deploy.sh
 EOF
@@ -72,11 +87,12 @@ cleanup() {
 # 主函数
 main() {
     info "Starting deployment process..."
+    check_ssh_key
     check_ssh
     prepare_files
     upload_files
     execute_remote_deploy
-    cleanup
+    #cleanup
     info "Deployment completed successfully!"
 }
 
