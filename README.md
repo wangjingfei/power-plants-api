@@ -71,20 +71,20 @@ my_api_project/
 ### 开发环境设置
 
 1. 克隆项目：
-bash
+```bash
 git clone <repository-url>
 cd power-plants-api
-
+```
 2. 安装依赖：
 
 ### 配置
 
 1. 创建数据库配置文件：
 
-bash:README.md
+```bash:README.md
 mkdir -p /opt/power-plants/config/
 cp config/production.conf /opt/power-plants/config/database.conf
-
+```
 2. 修改数据库配置：
 
 ```ini
