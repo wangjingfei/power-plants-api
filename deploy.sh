@@ -99,8 +99,8 @@ WorkingDirectory=$APP_PATH
 Environment="PATH=$VENV_PATH/bin"
 ExecStart=$VENV_PATH/bin/python run.py
 Restart=always
-StandardOutput=append:$APP_PATH/logs/fastapi.log
-StandardError=append:$APP_PATH/logs/fastapi.error.log
+StandardOutput=append:/var/log/power-plant/app.log
+StandardError=append:/var/log/power-plant/error.log
 
 [Install]
 WantedBy=multi-user.target
@@ -153,6 +153,16 @@ EOF
 # 配置应用
 configure_application() {
     info "Configuring application..."
+    
+    # 创建日志目录
+    mkdir -p /var/log/power-plant
+    touch /var/log/power-plant/app.log
+    touch /var/log/power-plant/error.log
+    chown -R $USER:$GROUP /var/log/power-plant
+    chmod 755 /var/log/power-plant
+    chmod 644 /var/log/power-plant/app.log
+    chmod 644 /var/log/power-plant/error.log
+
     CONFIG_FILE="/etc/power-plant/config.ini"
     
     # 创建配置目录
@@ -188,19 +198,25 @@ EOF
         chown $USER:$GROUP $CONFIG_FILE
         chmod 640 $CONFIG_FILE
     fi
-
-    # 创建日志目录
-    mkdir -p /var/log/power-plant
-    chown -R $USER:$GROUP /var/log/power-plant
 }
 
 # 启动服务
 start_services() {
     info "Starting services..."
+    
+    # 启动应用服务
     systemctl start $APP_NAME
     systemctl enable $APP_NAME
-    systemctl restart nginx
-    systemctl enable nginx
+    
+    # 检查 Nginx 配置文件是否存在
+    NGINX_CONF="/etc/nginx/sites-available/$APP_NAME"
+    if [ ! -f "$NGINX_CONF" ]; then
+        info "Restarting Nginx due to new configuration..."
+        systemctl restart nginx
+        systemctl enable nginx
+    else
+        info "Nginx configuration exists, skipping restart..."
+    fi
 }
 
 # 清理临时文件

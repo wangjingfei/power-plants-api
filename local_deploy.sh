@@ -74,6 +74,10 @@ execute_remote_deploy() {
     ssh -i "$SSH_KEY_PATH" $REMOTE_USER@$REMOTE_HOST "bash -s" << 'EOF'
         cd /tmp
         sudo bash deploy.sh
+        # 重启应用服务
+        sudo systemctl restart power-plants-api
+        # 检查服务状态
+        sudo systemctl status power-plants-api
 EOF
 }
 
