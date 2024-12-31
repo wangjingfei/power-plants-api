@@ -112,10 +112,17 @@ EOF
 # 配置Nginx
 configure_nginx() {
     info "Configuring Nginx..."
-    cat > /etc/nginx/sites-available/$APP_NAME << EOF
+    NGINX_CONF="/etc/nginx/sites-available/$APP_NAME"
+    
+    # 检查配置文件是否存在
+    if [ -f "$NGINX_CONF" ]; then
+        info "Nginx configuration file already exists, skipping creation..."
+    else
+        info "Creating Nginx configuration file..."
+        cat > $NGINX_CONF << EOF
 server {
     listen 80;
-    server_name us.wangjingfei.com;
+    server_name plant.wjf.me;
 
     access_log /var/log/power-plant/nginx/access.log;
     error_log /var/log/power-plant/nginx/error.log;
@@ -135,9 +142,11 @@ server {
     }
 }
 EOF
+    fi
 
-    #ln -sf /etc/nginx/sites-available/$APP_NAME /etc/nginx/sites-enabled/
-    #rm -f /etc/nginx/sites-enabled/default
+    # 创建软链接并检查配置
+    ln -sf $NGINX_CONF /etc/nginx/sites-enabled/
+    rm -f /etc/nginx/sites-enabled/default
     nginx -t || error "Nginx configuration test failed"
 }
 

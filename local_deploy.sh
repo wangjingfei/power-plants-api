@@ -6,7 +6,7 @@ RED='\033[0;31m'
 NC='\033[0m' # No Color
 
 # 定义变量
-REMOTE_HOST="us.wangjingfei.com"
+REMOTE_HOST="plant.wjf.me"
 REMOTE_USER="root"
 SSH_KEY_PATH="$HOME/.ssh/id_rsa"  # SSH私钥路径
 APP_NAME="power-plants-api"
