@@ -32,3 +32,22 @@ class DailyReportInDBBase(DailyReportBase):
 
 class DailyReport(DailyReportInDBBase):
     pass 
+
+class DailyReportResponse(BaseModel):
+    id: int
+    date: date
+    plantId: str
+    plantName: str
+    plant_owner_id: int
+    nominalPower: int
+    currentPac: Decimal
+    eToday: Decimal
+    etodayMoney: Decimal
+    eTotal: Decimal
+    etotalMoney: Decimal
+    lastUpdate: datetime
+    eMonth: Decimal
+    emonthMoney: Decimal
+    
+    class Config:
+        from_attributes = True 

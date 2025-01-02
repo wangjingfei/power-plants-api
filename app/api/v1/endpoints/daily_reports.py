@@ -3,10 +3,35 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from app.api import deps
 from app.crud.daily_report import daily_report
-from app.schemas.daily_report import DailyReport, DailyReportCreate, DailyReportUpdate
+from app.schemas.daily_report import DailyReport, DailyReportCreate, DailyReportUpdate, DailyReportResponse
+from app.models.daily_report import DailyReport as DailyReportModel
+from app.models.plant import Plant
 from datetime import date
+from app.core.database import get_db
 
 router = APIRouter()
+
+@router.get("/user", response_model=List[DailyReportResponse])
+def get_user_daily_reports(
+    user_id: int,
+    date: date,
+    db: Session = Depends(get_db)
+):
+    """获取指定用户在指定日期的所有电站日报"""
+    reports = db.query(DailyReportModel)\
+        .filter(
+            DailyReportModel.date == date,
+            DailyReportModel.plant_owner_id == user_id
+        )\
+        .all()
+    
+    if not reports:
+        raise HTTPException(
+            status_code=404,
+            detail=f"No daily reports found for user {user_id} on {date}"
+        )
+    
+    return reports
 
 @router.get("/", response_model=List[DailyReport])
 def read_daily_reports(

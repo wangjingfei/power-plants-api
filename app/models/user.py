@@ -11,6 +11,7 @@ class User(Base):
     isActive = Column(Boolean, nullable=True)
 
     # 关联关系
-    daily_reports = relationship("DailyReport", back_populates="owner")
+    plants = relationship("Plant", back_populates="owner")
+    daily_reports = relationship("DailyReport", back_populates="owner")    
     monthly_reports = relationship("MonthlyReport", back_populates="user")
     plants = relationship("Plant", back_populates="owner")
