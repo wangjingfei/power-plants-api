@@ -22,8 +22,8 @@ class Plant(Base):
     eTotal = Column(DECIMAL(12,2))
     etodayMoney = Column(DECIMAL(16,6))
     etotalMoney = Column(DECIMAL(16,6))
-    lastUpdate = Column(TIMESTAMP, default=datetime.utcnow)
-    investMoney = Column(DECIMAL(16,6), default=0.000000)
+    lastUpdate = Column(TIMESTAMP, server_default='CURRENT_TIMESTAMP')
+    investMoney = Column(DECIMAL(16,6), server_default='0.000000')
     eMonth = Column(DECIMAL(12,2))
     emonthMoney = Column(DECIMAL(16,6))
 
