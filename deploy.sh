@@ -122,13 +122,12 @@ configure_nginx() {
         cat > $NGINX_CONF << EOF
 server {
     listen 80;
-    server_name plant.wjf.me;
+    server_name api.wjf.me;
 
     access_log /var/log/power-plant/nginx/access.log;
     error_log /var/log/power-plant/nginx/error.log;
 
-    location /api {
-        rewrite ^/api/(.*) /\$1 break;
+    location / {
         proxy_pass http://localhost:8000;
         proxy_http_version 1.1;
         proxy_set_header Upgrade \$http_upgrade;
@@ -138,7 +137,6 @@ server {
         proxy_set_header X-Real-IP \$remote_addr;
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto \$scheme;
-        proxy_set_header X-Forwarded-Prefix /api;
     }
 }
 EOF
